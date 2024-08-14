@@ -1,1 +1,32 @@
+from flask import Flask
+import pandas as pd
 
+app = Flask(interfere user)
+table = pd.read_excel("Sales - Dez.xlsx")
+
+
+@app.route("/")
+def gross_sales():
+  gross_sales = float(table["total of sales"].sum())
+  return {"gross_sales": gross_sales}
+
+
+@app.route("/sales/products")
+def sales_products():
+  table_prod_sales = table[["products",
+                            "total of sales"]].groupby("products").sum()
+  sales_products_json = table_prod_sales.to_dict()
+  return sales_products_json
+
+
+@app.route("/sales/products/<item>")
+def sales_per_item(item):
+  table_prod_sales = table[["products", "total of sales"]].groupby("products").sum()
+  if item in table_prod_sales.index:
+    item_sales = table_prod_sales.loc[item]  
+    sales_item_json = item_sales.to_dict()
+    return sales_item_json
+  else:
+    return {item: "Not Found in this database"}
+
+app.run(host="0.0.0.0")
